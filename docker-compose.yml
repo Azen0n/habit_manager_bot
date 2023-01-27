@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  db:
+    container_name: postgres
+    image: postgres:14
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+  web:
+    container_name: bot
+    build:
+      context: ./bot
+    command: python bot.py
+    volumes:
+      - ./bot:/code
+    ports:
+      - "${EXT_PORT}:${INT_PORT}"
+    environment:
+      - POSTGRES_NAME=${POSTGRES_NAME}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - TOKEN=${TOKEN}
+    depends_on:
+      - db
