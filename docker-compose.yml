@@ -10,7 +10,12 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-  web:
+      - POSTGRES_HOST=${POSTGRES_HOST}
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    networks:
+      - bot-network
+  bot:
     container_name: bot
     build:
       context: ./bot
@@ -20,9 +25,17 @@ services:
     ports:
       - "${EXT_PORT}:${INT_PORT}"
     environment:
+      - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_NAME=${POSTGRES_NAME}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST=${POSTGRES_HOST}
       - TOKEN=${TOKEN}
+    networks:
+      - bot-network
     depends_on:
       - db
+
+networks:
+  bot-network:
+    driver: bridge
